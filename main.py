@@ -1,170 +1,85 @@
-size_mappings = {
-    1: "Small",
-    2: "Large",
-    3: "Extra Large",
-    4: "Party Size"
-}
+# making the lists
+available_pizzas = ['margarita', 'hawaiian', 'pepperoni', 'meat', 'vegetarian']
+available_toppings = ['mushroom', 'onions', 'olives', 'extra cheese']
+pizza_prices = {'margarita': 5, 'hawaiian': 7, 'pepperoni': 6, 'meat': 8, 'vegetarian': 6.5}
+topping_prices = {'mushroom': 1, 'onions': 2, 'olives': 3, 'extra cheese': 4}
+sub_total = []
+final_order = {}
+customer_adress = {}
 
-
-cost_mappings = {
-    "Small": 6,
-    "Large": 10,
-    "Extra Large": 12,
-    "Party Size": 24
-}
-
-
-
-class Pizza():
-    def __init__(self, size):
-        self.size = size
-
-    def set_size(self, size):
-        self.size = size
-
-    def get_size(self):
-        return self.size()
-
-    def get_cost(self):
-        return cost_mappings[self.size]
-
-
-
-class Order():
-    def __init__(self):
-        self.pizzas = []
-
-    def addPizza(self, pizza):
-        self.pizzas.append(pizza)
-
-    def getTotal(self):
-        total = 0
-        for pizza in self.pizzas:
-            total += pizza.get_cost()
-        return total
-
-# start processing the order
-order = Order()
-
-
-def run():
-    print("\nWhat size pizza would you like?\n\n\
-    _____________________________________________________________\n\
-    | 1: Small  |  2: Large  |  3: Extra Large  |  4: Party Size |\n\
-    |    $6     |     $10    |        $12       |       $24      |\n\
-    |___________|____________|__________________|________________|\n\
-    \n- Press 't' to choose your toppings\n")
-
+# ordering a pizza
+print("Hi, welcome to our text based pizza ordering")
+order_pizza = True
+while order_pizza:
+    print("Please choose a pizza: ")
+    print()
+    for pizzas in available_pizzas:
+        print(pizzas)
+        print()
     while True:
-        try:
+        pizza = input("which pizza would you like to order?")
+        if pizza in available_pizzas:
+            print(f"You have ordered a {pizza}.")
+            sub_total.append(pizza_prices[pizza])
+            break
+        if pizza not in available_pizzas:
+            print(f"I am sorry, we currently do not have {pizza}.")
 
-            response = input('-')
+    # asking for extra toppings
+    order_topping = True
+    print("This is the list of available extra toppings: ")
+    for toppings in available_toppings:
+        print(toppings)
+        print()
+    while order_topping:
+        extra_topping = input("Would you like an extra topping? yes or no?")
+        if extra_topping == "yes":
+            topping = input("Which one would you like to add?")
+            if topping in available_toppings:
+                final_order.setdefault(pizza, [])
+                final_order[pizza].append(topping)
+                print(f"I have added {topping}.")
+                sub_total.append(topping_prices[topping])
+            else:
+                print(f"I am sorry, we don't have {topping} available.")
 
-            if response == 't':
-                break
+        elif extra_topping == "no":
+            break
+    extra_pizza = input("Would you like to order another pizza?")
+    if extra_pizza == "no":
+        for key, value in final_order.items():
+            print(f"\nYou have order a {key} pizza with {value}")
+        check_order = True
+        while check_order:
+            print()
+            order_correct = input("Is this correct? yes/no ")
+            if order_correct == "yes":
+                check_order = False
+                order_pizza = False
+            if order_correct == "no":
+                print(final_order)
+                add_remove = input("would you like to add or remove? ")
+                if add_remove == "remove":
+                    remove = input("Which pizza would you like to remove? ")
+                    del final_order[remove]
+                    print(final_order)
+                if add_remove == "add":
+                    check_order = False
 
-            size_wanted = int(response)
+# finalizing the order
+print(f"\nYour total order price is: ${sum(sub_total)}")
 
-            size_wanted = size_mappings[size_wanted]
-
-
-            print(f"Pizza: {size_wanted}")
-            order.addPizza(Pizza(size_wanted))
-        except:
-            print("An error occurred, please try again")
-run()
-
-print("your current order total: ", "$" + str(order.getTotal()))
-
-
-topping_mappings = {
-                    1: 'Anchovies',
-                    2: 'Bacon',
-                    3: 'Bell Peppers',
-                    4: 'Black Olives',
-                    5: 'Chicken',
-                    6: 'Ground Beef',
-                    7: 'Jalapenos',
-                    8: 'Mushrooms',
-                    9: 'Pepperoni',
-                    10: 'Pineapple',
-                    11: 'Spinach',
-                    12: 'Onion'
-                    }
-
-topping_cost_mappings = {
-                        'Anchovies': 1,
-                        'Bacon': 1,
-                        'Bell Peppers': 1,
-                        'Black Olives': 1,
-                        'Chicken': 1,
-                        'Ground Beef': 1,
-                        'Jalapenos': 1,
-                        'Mushrooms': 1,
-                        'Pepperoni': 1,
-                        'Pineapple': 1,
-                        'Spinach': 1,
-                        'Onion': 1
-                        }
-
-
-class CustomerToppings():
-    """ Have customer pick toppings for pizza"""
-
-    def __init__(self, numToppings):
-        self.numToppings = numToppings
-
-    def set_toppings(self, numToppings):
-        self.numToppings = numToppings
-
-    def get_toppings(self):
-        return topping_cost_mappings[self.numToppings]
-
-
-class ToppingOrder():
-
-    def __init__(self):
-        self.topping = []
-
-    def addTopping(self, toppings):
-        self.topping.append(toppings)
-
-    def toppingTotal(self):
-        get_topping_total = 0
-        for toppings in self.topping:
-            get_topping_total += toppings.get_toppings()
-        return get_topping_total
-
-# Strat processing the order
-topping_order = ToppingOrder()
-
-def runTopping():
-    print("\nWhat toppings would you like on your pizza?\n\n\
-    ______________________________________________________________________\n\
-    | 1: Anchovies |    2: Bacon    | 3: Bell Peppers |  4: Black Olives |\n\
-    |  5: Chicken  | 6: Ground Beef |   7: Jalapenos  |   8: Mushrooms   |\n\
-    | 9: Pepperoni |  10: Pineapple |   11: Spinach   |    12: Onions    |\n\
-    |______________|________________|_________________|__________________|\n\
-    Press 'f' for your final total: \n")
-
-    while True:
-        try:
-            response = input('-')
-            if response == 'f':
-                break
-            toppings_wanted = int(response)
-
-            toppings_wanted = topping_mappings[toppings_wanted]
-
-            print(f"Topping: {toppings_wanted}")
-            topping_order.addTopping(CustomerToppings(toppings_wanted))
-        except:
-            print("An error occurred, please try again")
-
-runTopping()
-
-sub_size = int(order.getTotal())
-sub_toppings =  int(topping_order.toppingTotal())
-final_total = sub_size + sub_toppings
-
-print(f" \nYour final total will be ${final_total}\n")
+print("Please provide us with your name, adress and phonenumber")
+customer_adress['name'] = input("what is your name?")
+customer_adress['street_name'] = input("What is your streetname and housenumber?")
+customer_adress['postalcode'] = input("What is the postalcode and cityname?")
+customer_adress['phonenumber'] = input("What is your phonenumber?")
+print()
+print(f"Thank you for your order {customer_adress['name']}.")
+print()
+print("We will deliver your order to this adress ASAP")
+print()
+print(customer_adress['street_name'])
+print(customer_adress['postalcode'])
+print()
+print(f"we will contact you on {customer_adress['phonenumber']} if anything comes up.")
